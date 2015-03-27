@@ -226,12 +226,12 @@ class Notification(models.Model):
 
     @property
     def order_number(self):
-        return self.merchant_reference.split('-')[0]
+        return self.merchant_reference.rsplit('-', 1)[0]
 
     @property
     def payment(self):
         try:
-            payment_id = int(self.merchant_reference.split('-')[1])
+            payment_id = int(self.merchant_reference.rsplit('-', 1)[1])
         except ValueError:
             raise ValueError("merchant_reference '{}' of notification '{}'"
                              " doesn't have format"
