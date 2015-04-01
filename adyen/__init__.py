@@ -9,6 +9,7 @@ import hashlib
 import hmac
 import logging
 import StringIO
+import sys
 from urllib import urlencode
 from urlparse import urlparse, parse_qs
 
@@ -17,6 +18,9 @@ import pytz
 log = logging.getLogger(__name__)
 
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
+if sys.version_info[0] >= 3:
+    unicode = str
 
 
 class UnknownSkinCode(StandardError):
@@ -134,7 +138,10 @@ class HostedPayment(object):
             raise ValueError("The parameter(s) {} may not be None."
                              .format(", ".join([k for k, v in params.items()
                                                 if v is None])))
-        params = {key: str(value) for (key, value) in params.items()}
+
+        # Make absolutely sure that all URL parameters are UTF-8 encoded.
+        # This needs to happen before urlencode(), which doesn't handle unicode well.
+        params = {key: unicode(value).encode('utf-8') for (key, value) in params.items()}
         params['merchantSig'] = self.get_setup_signature(
             params, self.backend.get_skin_secret(self.backend.skin_code))
         live_or_test = 'test'
@@ -321,11 +328,11 @@ def _get_signature(keys, params, secret):
     if not secret:
         # the implementation needs a not None key, but for mock testing an
         # empty key is sufficient, so treat None as ''.
-        secret = ''.encode('utf-8')
+        secret = ''
 
     plaintext = "".join(map(lambda v: '' if v is None else v,
                             (params.get(key, '') for key in keys)))
-    hm = hmac.new(secret, plaintext, hashlib.sha1)
+    hm = hmac.new(secret.encode('utf-8'), plaintext.encode('utf-8'), hashlib.sha1)
     return base64.encodestring(hm.digest()).strip()
 
 
