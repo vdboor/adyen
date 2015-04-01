@@ -12,6 +12,9 @@ from .models import Payment, Result, Notification
 
 
 def create_payment(order_number, *args, **kwargs):
+    # API Manual, page 8: reference:
+    # If you need to provide multiple references for a transaction you may
+    # use this field to submit them with the transaction, separating each with "-".
     merchant_reference = ("{order_number}-{{payment_id}}"
                           .format(order_number=order_number))
 
@@ -20,6 +23,8 @@ def create_payment(order_number, *args, **kwargs):
 
     if not payment:
         return
+
+    payment.merchant_order_reference = order_number  # The reference to link multiple transactions to each other.
 
     if hasattr(settings, 'ADYEN_COUNTRY_CODE'):
         payment.country_code = settings.ADYEN_COUNTRY_CODE
