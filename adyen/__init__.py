@@ -67,6 +67,7 @@ class HostedPayment(object):
                  currency_code, is_live=False, **kwargs):
         self.backend = backend
         self.merchant_reference = merchant_reference
+        self.merchant_order_reference = None
         self.payment_amount = payment_amount
         self.currency_code = currency_code
         self.ship_before_date = timedelta(days=3)
@@ -116,6 +117,7 @@ class HostedPayment(object):
         optional_params = {
             'shopperLocale': self.shopper_locale,
             'orderData': self._encode_order_data(self.order_data),
+            'merchantOrderReference': self.merchant_order_reference,
             'merchantReturnData': self.merchant_return_data,
             'countryCode': self.country_code,
             'shopperEmail': self.shopper_email,
