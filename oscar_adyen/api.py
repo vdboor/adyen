@@ -96,11 +96,17 @@ get_unhandled_notifications = django_adyen_api.get_unhandled_notifications
 
 
 def handle_notifications():
+    """
+    Process all unhandled notifications
+    """
     return len(filter(None, map(handle_notification,
                                 get_unhandled_notifications())))
 
 
 def handle_notification(notification):
+    """
+    Process a notification
+    """
     log.info('Processing adyen notification {}'.format(notification))
 
     try:
