@@ -171,6 +171,11 @@ class NotificationManager(models.Manager):
 
 
 class Notification(models.Model):
+    """
+    All received notifications from Adyen are stored in the database.
+    These are processed by a task, which updates the :attr:`handled` field.
+    """
+    # Possible event codes:
     AUTHORISATION = 'AUTHORISATION'
     CANCELLATION = 'CANCELLATION'
     REFUND = 'REFUND'
@@ -201,6 +206,7 @@ class Notification(models.Model):
     success = models.BooleanField(default=None)
     # see Payment.brand_code, which is the same
     payment_method = models.CharField(max_length=40, blank=True, null=True)
+    # The possible operations (e.g. "REFUND" or "CANCEL,CAPTURE,REFUND")
     operations = models.TextField()
     reason = models.TextField()
     value = models.IntegerField(null=True)
@@ -217,6 +223,11 @@ class Notification(models.Model):
 
     @property
     def order_number(self):
+        """
+        Extract the order number from the merchant_reference.
+
+        Adyen supports adding "{order_number}-{id}"
+        """
         return self.merchant_reference.rsplit('-', 1)[0]
 
     @property

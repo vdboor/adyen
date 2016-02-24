@@ -96,11 +96,16 @@ get_unhandled_notifications = django_adyen_api.get_unhandled_notifications
 
 
 def handle_notifications():
-    return len(filter(None, map(handle_notification,
-                                get_unhandled_notifications())))
+    """
+    Process all unhandled notifications
+    """
+    return len(filter(None, map(handle_notification, get_unhandled_notifications())))
 
 
 def handle_notification(notification):
+    """
+    Process a notification
+    """
     log.info('Processing adyen notification {}'.format(notification))
 
     try:
@@ -111,9 +116,7 @@ def handle_notification(notification):
                           s=notification))
         return
 
-    event_type, __ = PaymentEventType.objects.get_or_create(
-        name="Adyen - {}".format(notification.event_code))
-
+    event_type, __ = PaymentEventType.objects.get_or_create(name=notification.event_code)
     EventHandler().handle_payment_event(
         order=order,
         event_type=event_type,
@@ -121,9 +124,9 @@ def handle_notification(notification):
         lines=order.lines.all(),
         quantities=[line.quantity for line in order.lines.all()],
         reference=notification.psp_reference,
-        notification=notification)
+        notification=notification
+    )
 
     notification.handled = True
     notification.save()
-
     return notification
