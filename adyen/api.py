@@ -33,8 +33,11 @@ u'mockreference'
 
 from __future__ import unicode_literals
 
-from urllib import urlencode
-from urlparse import urlparse, parse_qs
+try:
+    from urllib import urlencode
+    from urlparse import urlparse, parse_qs
+except ImportError:
+    from urllib.parse import urlencode, urlparse, parse_qs
 
 from adyen import (HostedPayment, HostedPaymentResult, _get_result_signature,
                    HostedPaymentNotification)
