@@ -8,7 +8,10 @@ import gzip
 import hashlib
 import hmac
 import logging
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import sys
 from urllib import urlencode
 from urlparse import urlparse, parse_qs
@@ -203,7 +206,7 @@ class HostedPayment(object):
         if not value:
             return None
 
-        out = StringIO.StringIO()
+        out = StringIO()
         with gzip.GzipFile(fileobj=out, mode="w") as f:
             f.write(value)
         return out.getvalue().encode('base64')
