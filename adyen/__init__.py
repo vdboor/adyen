@@ -27,6 +27,10 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 if sys.version_info[0] >= 3:
     unicode = str
 
+try:
+    t = StandardError
+except NameError:
+    StandardError = Exception
 
 class UnknownSkinCode(StandardError):
     pass
