@@ -13,9 +13,11 @@ try:
 except ImportError:
     from io import StringIO
 import sys
-from urllib import urlencode
-from urlparse import urlparse, parse_qs
-
+try:
+    from urllib import urlencode
+    from urlparse import urlparse, parse_qs
+except ImportError:
+    from urllib.parse import urlencode, urlparse, parse_qs
 import pytz
 
 log = logging.getLogger(__name__)
