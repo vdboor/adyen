@@ -8,11 +8,16 @@ import gzip
 import hashlib
 import hmac
 import logging
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import sys
-from urllib import urlencode
-from urlparse import urlparse, parse_qs
-
+try:
+    from urllib import urlencode
+    from urlparse import urlparse, parse_qs
+except ImportError:
+    from urllib.parse import urlencode, urlparse, parse_qs
 import pytz
 
 log = logging.getLogger(__name__)
@@ -22,6 +27,10 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 if sys.version_info[0] >= 3:
     unicode = str
 
+try:
+    t = StandardError
+except NameError:
+    StandardError = Exception
 
 class UnknownSkinCode(StandardError):
     pass
@@ -203,7 +212,7 @@ class HostedPayment(object):
         if not value:
             return None
 
-        out = StringIO.StringIO()
+        out = StringIO()
         with gzip.GzipFile(fileobj=out, mode="w") as f:
             f.write(value)
         return out.getvalue().encode('base64')
