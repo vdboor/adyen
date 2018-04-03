@@ -35,7 +35,7 @@ PAYMENT_METHOD_NAMES = {
 }
 
 
-class PaymentFailed(StandardError):
+class PaymentFailed(Exception):
     pass
 
 
